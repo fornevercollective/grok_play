@@ -3,79 +3,85 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grok Image Playground • Fornever Collective</title>
+  <title>grok play | fornever collective</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/theatre.js/0.4.0/theatre.min.js"></script>
   <style>
     :root {
-      --accent: #00ff9d;
-      --bg: #050505;
-      --panel: #0c0c0c;
+      --bg: #0a0a0a;
+      --panel: #111111;
+      --accent: #00ffaa;
+      --accent-dark: #00cc88;
+      --text: #eeeeee;
+      --text-muted: #777777;
+      --border: #1f1f1f;
     }
+
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       font-family: 'Inter', system-ui, sans-serif;
       background: var(--bg);
-      color: #eee;
+      color: var(--text);
       height: 100vh;
       overflow: hidden;
       display: grid;
-      grid-template-columns: 260px 1fr 340px;
+      grid-template-columns: 240px 1fr 340px;
     }
 
     .sidebar {
       background: var(--panel);
-      border-right: 1px solid #111;
+      border-right: 1px solid var(--border);
       padding: 24px;
       display: flex;
       flex-direction: column;
     }
     .logo {
-      font-size: 32px;
-      font-weight: 900;
-      background: linear-gradient(90deg, #00ff9d, #00cc77);
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       margin-bottom: 40px;
-      letter-spacing: -2px;
     }
+
     .nav button {
       width: 100%;
-      padding: 16px 20px;
-      background: #111;
+      padding: 13px 16px;
+      background: #1a1a1a;
       border: none;
-      color: #aaa;
+      color: var(--text-muted);
       text-align: left;
-      margin: 8px 0;
-      border-radius: 12px;
-      font-size: 15px;
+      margin: 6px 0;
+      border-radius: 9px;
+      font-size: 14.5px;
       cursor: pointer;
       transition: all 0.2s;
     }
-    .nav button.active, .nav button:hover {
+    .nav button.active,
+    .nav button:hover {
       background: var(--accent);
-      color: black;
+      color: #000;
       font-weight: 600;
     }
 
     .main {
       padding: 30px;
-      background: #080808;
+      background: var(--bg);
       display: flex;
       flex-direction: column;
     }
     #preview {
       flex: 1;
       background: #000;
-      border-radius: 20px;
+      border-radius: 16px;
       overflow: hidden;
       position: relative;
-      box-shadow: 0 0 60px rgba(0, 255, 157, 0.15);
+      border: 1px solid var(--border);
     }
     #output-image {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      background: #111;
     }
     .placeholder {
       position: absolute;
@@ -84,26 +90,25 @@
       align-items: center;
       justify-content: center;
       color: #333;
-      font-size: 18px;
+      font-size: 16px;
       text-align: center;
     }
 
     .generate-btn {
       margin-top: 20px;
-      padding: 18px;
-      font-size: 17px;
+      padding: 15px;
+      font-size: 16px;
       font-weight: 700;
-      background: linear-gradient(90deg, #00ff9d, #00dd88);
-      color: black;
+      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
+      color: #000;
       border: none;
-      border-radius: 16px;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 10px 30px rgba(0, 255, 157, 0.3);
     }
 
     .right-panel {
       background: var(--panel);
-      border-left: 1px solid #111;
+      border-left: 1px solid var(--border);
       padding: 24px;
       overflow-y: auto;
     }
@@ -112,120 +117,115 @@
     }
     .control label {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: var(--accent);
-      font-size: 13px;
-      text-transform: uppercase;
+      font-size: 12px;
+      font-weight: 500;
       letter-spacing: 0.5px;
+      text-transform: uppercase;
     }
-    input[type="range"] {
-      width: 100%;
-      accent-color: var(--accent);
-    }
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    .value { float: right; color: var(--text-muted); font-family: monospace; }
 
     .note-box {
       width: 100%;
-      height: 260px;
-      background: #111;
-      border: 1px solid #222;
-      border-radius: 12px;
-      padding: 14px;
-      color: #ddd;
+      height: 210px;
+      background: #1a1a1a;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      color: var(--text);
       font-size: 14px;
       resize: none;
     }
 
     .status {
       margin-top: auto;
-      padding: 12px;
-      background: #111;
-      border-radius: 10px;
+      padding: 10px 14px;
+      background: #1a1a1a;
+      border-radius: 8px;
       font-size: 13px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
+      color: var(--text-muted);
     }
-    .dot { width: 9px; height: 9px; background: #00ff9d; border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 50% { opacity: 0.3; } }
+    .dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 50% { opacity: 0.4; } }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
   <div class="sidebar">
     <div class="logo">GROK PLAY</div>
     <div class="nav">
       <button class="active" onclick="switchTab(0)">🎨 Playground</button>
       <button onclick="switchTab(1)">📝 Notes</button>
-      <button onclick="switchTab(2)">🎭 Theatre</button>
+      <button onclick="switchTab(2)">🎭 Theatre Timeline</button>
     </div>
     <div class="status">
       <span class="dot"></span>
-      Grok-2 Image Playground
+      Grok Image Playground
     </div>
   </div>
 
-  <!-- Main Preview -->
   <div class="main">
     <div id="preview">
-      <img id="output-image" alt="Grok Generated Image">
-      <div class="placeholder">Your Grok-generated image will appear here.<br><br>Press Generate to begin.</div>
+      <img id="output-image" alt="Grok Output">
+      <div class="placeholder">Image will appear here.<br>Hit Generate to create with Grok.</div>
     </div>
-    <button class="generate-btn" onclick="generateWithGrok()">✨ Generate with Grok</button>
+    <button class="generate-btn" onclick="generateWithGrok()">GENERATE WITH GROK</button>
   </div>
 
-  <!-- Right Panel -->
   <div class="right-panel">
-    <h2 style="margin-bottom:20px; color:var(--accent);">Prompt Studio</h2>
+    <h2 style="margin-bottom:20px;color:var(--accent)">Prompt Studio</h2>
     
     <div class="control">
       <label>Prompt</label>
-      <textarea id="prompt" rows="5" style="width:100%; background:#111; border:1px solid #222; color:#fff; padding:12px; border-radius:10px; font-size:14px;">cinematic wide shot of a lone wanderer in a neon-lit cyberpunk alley, heavy rain, reflections, dramatic lighting, moody atmosphere, ultra detailed, 8k</textarea>
+      <textarea id="prompt" rows="4">cinematic portrait of a digital ghost emerging from neon fog, intricate details, dramatic rim lighting, moody cyberpunk atmosphere, shot on 35mm</textarea>
     </div>
 
     <div class="control">
-      <label>Theatre Controls — Style Intensity <span id="val-intensity">65</span>%</label>
+      <label>Style Intensity <span class="value" id="val-intensity">65</span></label>
       <input type="range" id="intensity" min="0" max="100" value="65" oninput="updateValue(this)">
     </div>
 
     <div class="control">
-      <label>Surreal Factor <span id="val-surreal">35</span>%</label>
-      <input type="range" id="surreal" min="0" max="100" value="35" oninput="updateValue(this)">
+      <label>Surreal Factor <span class="value" id="val-surreal">40</span></label>
+      <input type="range" id="surreal" min="0" max="100" value="40" oninput="updateValue(this)">
     </div>
 
     <div class="control">
-      <label>Cinematic Drama <span id="val-cinematic">80</span>%</label>
-      <input type="range" id="cinematic" min="0" max="100" value="80" oninput="updateValue(this)">
+      <label>Cinematic Drama <span class="value" id="val-cinematic">82</span></label>
+      <input type="range" id="cinematic" min="0" max="100" value="82" oninput="updateValue(this)">
     </div>
 
-    <div style="margin-top:30px;">
-      <label style="color:#666;">Current Note</label>
-      <textarea id="note" class="note-box" placeholder="Write your thoughts about this generation..."></textarea>
+    <div class="control">
+      <label>Note</label>
+      <textarea id="note" class="note-box" placeholder="Thoughts, references, or concept behind this image..."></textarea>
     </div>
   </div>
 
   <script>
-    let currentImage = null;
     let project, sheet;
 
-    // Initialize Theatre.js
     function initTheatre() {
-      project = theatre.getProject("Grok Image Playground");
-      sheet = project.sheet("Image Parameters");
-      
-      const obj = sheet.object("Style", {
+      project = theatre.getProject("GrokPlay");
+      sheet = project.sheet("Image Sequence");
+
+      const obj = sheet.object("Visual Parameters", {
         intensity: 65,
-        surreal: 35,
-        cinematic: 80
+        surreal: 40,
+        cinematic: 82
       });
 
-      obj.onValuesChange(values => {
-        document.getElementById("intensity").value = values.intensity;
-        document.getElementById("surreal").value = values.surreal;
-        document.getElementById("cinematic").value = values.cinematic;
-        updateValue({id:"intensity", value:values.intensity});
-        updateValue({id:"surreal", value:values.surreal});
-        updateValue({id:"cinematic", value:values.cinematic});
+      obj.onValuesChange(v => {
+        document.getElementById("intensity").value = Math.round(v.intensity);
+        document.getElementById("surreal").value = Math.round(v.surreal);
+        document.getElementById("cinematic").value = Math.round(v.cinematic);
+        document.getElementById("val-intensity").textContent = Math.round(v.intensity);
+        document.getElementById("val-surreal").textContent = Math.round(v.surreal);
+        document.getElementById("val-cinematic").textContent = Math.round(v.cinematic);
       });
     }
 
@@ -240,37 +240,22 @@
 
       placeholder.style.display = "none";
       output.style.display = "block";
-      
-      // Simulate Grok generation (replace with real API call later)
-      output.src = `https://picsum.photos/id/${Math.floor(Math.random()*900)+100}/1200/1200?random=${Date.now()}`;
+      output.src = `https://picsum.photos/id/${Math.floor(Math.random()*900)+100}/1200/800?t=${Date.now()}`;
 
-      currentImage = output.src;
-      
-      // Auto-save note with metadata
-      const noteText = document.getElementById("note").value || "No note yet.";
-      console.log(`%c[Grok] Image generated with prompt: ${prompt}\nNote: ${noteText}`, "color:#00ff9d");
+      console.log(`%c[Grok Play] Image generated — Prompt: ${prompt.substring(0,70)}...`, "color:#00ffaa");
     }
 
-    function switchTab(tab) {
-      document.querySelectorAll('.nav button').forEach((btn, i) => {
-        btn.classList.toggle('active', i === tab);
-      });
-      // You can expand this later with more tab content
-      console.log(`Switched to tab ${tab}`);
+    function switchTab(n) {
+      document.querySelectorAll('.nav button').forEach((b,i)=> b.classList.toggle('active', i===n));
     }
 
-    // Keyboard support
     document.addEventListener("keydown", e => {
-      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-        e.preventDefault();
-        generateWithGrok();
-      }
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") generateWithGrok();
     });
 
-    // Initialize everything
     window.onload = () => {
       initTheatre();
-      console.log("%cFornever Collective • Grok Image Playground + Theatre.js + Notes Ready", "color:#00ff9d; font-size:15px; font-weight:bold");
+      console.log("%cfornever collective — grok play v2 (clean ui)", "color:#00ffaa");
     };
   </script>
 </body>
