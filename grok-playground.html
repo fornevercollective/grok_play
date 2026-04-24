@@ -5,11 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>grok play | fornever collective</title>
   <link rel="stylesheet" href="style.css">
-  <script type="module" src="app.js"></script>
 </head>
 <body>
   <div class="app">
-    <!-- Sidebar -->
     <div class="sidebar">
       <div class="logo">GROK PLAY</div>
       <div class="nav">
@@ -19,57 +17,51 @@
       </div>
       <div class="status">
         <span class="dot"></span>
-        Connected to Grok Image Playground
+        Grok Image Playground
       </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main" id="playground-tab">
       <div id="preview">
         <img id="output-image" alt="Grok Output">
-        <div class="placeholder">Your Grok image will appear here</div>
+        <div class="placeholder">Your image will appear here.<br>Press Generate to begin.</div>
       </div>
       <button id="generate-btn">GENERATE WITH GROK</button>
     </div>
 
     <div class="main hidden" id="notes-tab">
       <h2>Image Notes</h2>
-      <textarea id="note-text" class="note-editor"></textarea>
+      <textarea id="note-text" class="note-editor" placeholder="Write your thoughts, references, or concept..."></textarea>
     </div>
 
     <div class="main hidden" id="theatre-tab">
-      <h2>Theatre.js Studio Timeline</h2>
+      <h2>Theatre.js Timeline</h2>
       <div id="theatre-container">
-        <!-- Theatre Studio will be injected here -->
-        <p id="studio-status">Loading Theatre Studio...</p>
+        <p id="studio-status">Loading Theatre Studio with full timeline...</p>
       </div>
     </div>
 
-    <!-- Right Panel -->
     <div class="right-panel">
       <h3>Prompt Studio</h3>
-      <textarea id="prompt" rows="5">cinematic wide shot of a digital deity made of liquid metal and neon light, floating in a cosmic void, dramatic volumetric lighting, intricate details, 8k --ar 3:2</textarea>
+      <textarea id="prompt" rows="5"></textarea>
 
       <div class="slider-group">
-        <label>Style Intensity <span id="val-intensity">65</span></label>
+        <label>Style Intensity <span id="val-intensity" class="value">65</span></label>
         <input type="range" id="intensity" min="0" max="100" value="65">
       </div>
       <div class="slider-group">
-        <label>Surreal Factor <span id="val-surreal">45</span></label>
+        <label>Surreal Factor <span id="val-surreal" class="value">45</span></label>
         <input type="range" id="surreal" min="0" max="100" value="45">
       </div>
       <div class="slider-group">
-        <label>Cinematic Drama <span id="val-cinematic">80</span></label>
+        <label>Cinematic Drama <span id="val-cinematic" class="value">80</span></label>
         <input type="range" id="cinematic" min="0" max="100" value="80">
       </div>
 
-      <button id="save-sequence">Save Sequence to Theatre</button>
+      <button id="save-sequence">Save to Theatre Timeline</button>
     </div>
   </div>
 
-  <script>
-    // This will be replaced by app.js once you set up modules
-    console.log("%cfornever collective — grok play v3 (clean + theatre ready)", "color:#00ffaa; font-weight:500");
-  </script>
+  <script type="module" src="app.js"></script>
 </body>
 </html>
