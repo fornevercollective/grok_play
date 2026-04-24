@@ -4,259 +4,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>grok play | fornever collective</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/theatre.js/0.4.0/theatre.min.js"></script>
-  <style>
-    :root {
-      --bg: #0a0a0a;
-      --panel: #111111;
-      --accent: #00ffaa;
-      --accent-dark: #00cc88;
-      --text: #eeeeee;
-      --text-muted: #777777;
-      --border: #1f1f1f;
-    }
-
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      height: 100vh;
-      overflow: hidden;
-      display: grid;
-      grid-template-columns: 240px 1fr 340px;
-    }
-
-    .sidebar {
-      background: var(--panel);
-      border-right: 1px solid var(--border);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-    }
-    .logo {
-      font-size: 27px;
-      font-weight: 800;
-      letter-spacing: -1px;
-      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 40px;
-    }
-
-    .nav button {
-      width: 100%;
-      padding: 13px 16px;
-      background: #1a1a1a;
-      border: none;
-      color: var(--text-muted);
-      text-align: left;
-      margin: 6px 0;
-      border-radius: 9px;
-      font-size: 14.5px;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
-    .nav button.active,
-    .nav button:hover {
-      background: var(--accent);
-      color: #000;
-      font-weight: 600;
-    }
-
-    .main {
-      padding: 30px;
-      background: var(--bg);
-      display: flex;
-      flex-direction: column;
-    }
-    #preview {
-      flex: 1;
-      background: #000;
-      border-radius: 16px;
-      overflow: hidden;
-      position: relative;
-      border: 1px solid var(--border);
-    }
-    #output-image {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-    .placeholder {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #333;
-      font-size: 16px;
-      text-align: center;
-    }
-
-    .generate-btn {
-      margin-top: 20px;
-      padding: 15px;
-      font-size: 16px;
-      font-weight: 700;
-      background: linear-gradient(90deg, var(--accent), var(--accent-dark));
-      color: #000;
-      border: none;
-      border-radius: 12px;
-      cursor: pointer;
-    }
-
-    .right-panel {
-      background: var(--panel);
-      border-left: 1px solid var(--border);
-      padding: 24px;
-      overflow-y: auto;
-    }
-    .control {
-      margin-bottom: 24px;
-    }
-    .control label {
-      display: block;
-      margin-bottom: 6px;
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: 0.5px;
-      text-transform: uppercase;
-    }
-    input[type="range"] { width: 100%; accent-color: var(--accent); }
-    .value { float: right; color: var(--text-muted); font-family: monospace; }
-
-    .note-box {
-      width: 100%;
-      height: 210px;
-      background: #1a1a1a;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      color: var(--text);
-      font-size: 14px;
-      resize: none;
-    }
-
-    .status {
-      margin-top: auto;
-      padding: 10px 14px;
-      background: #1a1a1a;
-      border-radius: 8px;
-      font-size: 13px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--text-muted);
-    }
-    .dot { width: 7px; height: 7px; background: var(--accent); border-radius: 50%; animation: pulse 2s infinite; }
-    @keyframes pulse { 50% { opacity: 0.4; } }
-  </style>
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
 </head>
 <body>
-
-  <div class="sidebar">
-    <div class="logo">GROK PLAY</div>
-    <div class="nav">
-      <button class="active" onclick="switchTab(0)">🎨 Playground</button>
-      <button onclick="switchTab(1)">📝 Notes</button>
-      <button onclick="switchTab(2)">🎭 Theatre Timeline</button>
-    </div>
-    <div class="status">
-      <span class="dot"></span>
-      Grok Image Playground
-    </div>
-  </div>
-
-  <div class="main">
-    <div id="preview">
-      <img id="output-image" alt="Grok Output">
-      <div class="placeholder">Image will appear here.<br>Hit Generate to create with Grok.</div>
-    </div>
-    <button class="generate-btn" onclick="generateWithGrok()">GENERATE WITH GROK</button>
-  </div>
-
-  <div class="right-panel">
-    <h2 style="margin-bottom:20px;color:var(--accent)">Prompt Studio</h2>
-    
-    <div class="control">
-      <label>Prompt</label>
-      <textarea id="prompt" rows="4">cinematic portrait of a digital ghost emerging from neon fog, intricate details, dramatic rim lighting, moody cyberpunk atmosphere, shot on 35mm</textarea>
+  <div class="app">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="logo">GROK PLAY</div>
+      <div class="nav">
+        <button class="nav-btn active" data-tab="playground">🎨 Playground</button>
+        <button class="nav-btn" data-tab="notes">📝 Notes</button>
+        <button class="nav-btn" data-tab="theatre">🎭 Theatre Timeline</button>
+      </div>
+      <div class="status">
+        <span class="dot"></span>
+        Connected to Grok Image Playground
+      </div>
     </div>
 
-    <div class="control">
-      <label>Style Intensity <span class="value" id="val-intensity">65</span></label>
-      <input type="range" id="intensity" min="0" max="100" value="65" oninput="updateValue(this)">
+    <!-- Main Content -->
+    <div class="main" id="playground-tab">
+      <div id="preview">
+        <img id="output-image" alt="Grok Output">
+        <div class="placeholder">Your Grok image will appear here</div>
+      </div>
+      <button id="generate-btn">GENERATE WITH GROK</button>
     </div>
 
-    <div class="control">
-      <label>Surreal Factor <span class="value" id="val-surreal">40</span></label>
-      <input type="range" id="surreal" min="0" max="100" value="40" oninput="updateValue(this)">
+    <div class="main hidden" id="notes-tab">
+      <h2>Image Notes</h2>
+      <textarea id="note-text" class="note-editor"></textarea>
     </div>
 
-    <div class="control">
-      <label>Cinematic Drama <span class="value" id="val-cinematic">82</span></label>
-      <input type="range" id="cinematic" min="0" max="100" value="82" oninput="updateValue(this)">
+    <div class="main hidden" id="theatre-tab">
+      <h2>Theatre.js Studio Timeline</h2>
+      <div id="theatre-container">
+        <!-- Theatre Studio will be injected here -->
+        <p id="studio-status">Loading Theatre Studio...</p>
+      </div>
     </div>
 
-    <div class="control">
-      <label>Note</label>
-      <textarea id="note" class="note-box" placeholder="Thoughts, references, or concept behind this image..."></textarea>
+    <!-- Right Panel -->
+    <div class="right-panel">
+      <h3>Prompt Studio</h3>
+      <textarea id="prompt" rows="5">cinematic wide shot of a digital deity made of liquid metal and neon light, floating in a cosmic void, dramatic volumetric lighting, intricate details, 8k --ar 3:2</textarea>
+
+      <div class="slider-group">
+        <label>Style Intensity <span id="val-intensity">65</span></label>
+        <input type="range" id="intensity" min="0" max="100" value="65">
+      </div>
+      <div class="slider-group">
+        <label>Surreal Factor <span id="val-surreal">45</span></label>
+        <input type="range" id="surreal" min="0" max="100" value="45">
+      </div>
+      <div class="slider-group">
+        <label>Cinematic Drama <span id="val-cinematic">80</span></label>
+        <input type="range" id="cinematic" min="0" max="100" value="80">
+      </div>
+
+      <button id="save-sequence">Save Sequence to Theatre</button>
     </div>
   </div>
 
   <script>
-    let project, sheet;
-
-    function initTheatre() {
-      project = theatre.getProject("GrokPlay");
-      sheet = project.sheet("Image Sequence");
-
-      const obj = sheet.object("Visual Parameters", {
-        intensity: 65,
-        surreal: 40,
-        cinematic: 82
-      });
-
-      obj.onValuesChange(v => {
-        document.getElementById("intensity").value = Math.round(v.intensity);
-        document.getElementById("surreal").value = Math.round(v.surreal);
-        document.getElementById("cinematic").value = Math.round(v.cinematic);
-        document.getElementById("val-intensity").textContent = Math.round(v.intensity);
-        document.getElementById("val-surreal").textContent = Math.round(v.surreal);
-        document.getElementById("val-cinematic").textContent = Math.round(v.cinematic);
-      });
-    }
-
-    function updateValue(el) {
-      document.getElementById(`val-${el.id}`).textContent = el.value;
-    }
-
-    async function generateWithGrok() {
-      const prompt = document.getElementById("prompt").value;
-      const output = document.getElementById("output-image");
-      const placeholder = document.querySelector(".placeholder");
-
-      placeholder.style.display = "none";
-      output.style.display = "block";
-      output.src = `https://picsum.photos/id/${Math.floor(Math.random()*900)+100}/1200/800?t=${Date.now()}`;
-
-      console.log(`%c[Grok Play] Image generated — Prompt: ${prompt.substring(0,70)}...`, "color:#00ffaa");
-    }
-
-    function switchTab(n) {
-      document.querySelectorAll('.nav button').forEach((b,i)=> b.classList.toggle('active', i===n));
-    }
-
-    document.addEventListener("keydown", e => {
-      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") generateWithGrok();
-    });
-
-    window.onload = () => {
-      initTheatre();
-      console.log("%cfornever collective — grok play v2 (clean ui)", "color:#00ffaa");
-    };
+    // This will be replaced by app.js once you set up modules
+    console.log("%cfornever collective — grok play v3 (clean + theatre ready)", "color:#00ffaa; font-weight:500");
   </script>
 </body>
 </html>
