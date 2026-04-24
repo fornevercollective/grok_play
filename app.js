@@ -1,19 +1,22 @@
-// app.js - Fornever Collective Grok Play
-import * as studio from "https://cdn.jsdelivr.net/npm/@theatre/studio@0.4.0/dist/index.js";
-import * as core from "https://cdn.jsdelivr.net/npm/@theatre/core@0.4.0/dist/index.js";
-
+// app.js - Fornever Collective Grok Play (Non-module version)
 let project, sheet, obj;
 let currentImageUrl = "";
 
 async function initTheatre() {
-    studio.initialize();
-    project = core.getProject("GrokPlayProject", { state: localStorage.getItem("theatreState") });
+    if (typeof theatre === "undefined") {
+        console.error("Theatre.js not loaded");
+        document.getElementById("studio-status").innerHTML = "❌ Failed to load Theatre.js";
+        return;
+    }
+
+    theatre.studio.initialize();
+    project = theatre.getProject("GrokPlayProject");
     sheet = project.sheet("Image Sequence");
 
     obj = sheet.object("Visual Controls", {
-        intensity: core.types.number(65, { range: [0, 100] }),
-        surreal: core.types.number(45, { range: [0, 100] }),
-        cinematic: core.types.number(82, { range: [0, 100] })
+        intensity: theatre.types.number(65, { range: [0, 100] }),
+        surreal: theatre.types.number(45, { range: [0, 100] }),
+        cinematic: theatre.types.number(82, { range: [0, 100] })
     });
 
     obj.onValuesChange((values) => {
@@ -26,13 +29,9 @@ async function initTheatre() {
         document.getElementById("val-cinematic").textContent = Math.round(values.cinematic);
     });
 
-    project.onChange(() => {
-        localStorage.setItem("theatreState", JSON.stringify(project.getState()));
-    });
-
     document.getElementById("studio-status").innerHTML = 
-        `✅ Theatre Studio Loaded<br>
-         <small>Open the timeline by clicking the Theatre.js icon in the top-right corner.</small>`;
+        `✅ Theatre Studio Ready<br>
+         <small>Click the <strong>Theatre.js</strong> icon in the top-right to open the timeline and keyframes.</small>`;
 }
 
 function switchTab(tab) {
@@ -44,8 +43,8 @@ function switchTab(tab) {
     });
 }
 
-async function generateWithGrok() {
-    const prompt = document.getElementById("prompt").value.trim();
+function generateWithGrok() {
+    const prompt = document.getElementById("prompt").value.trim() || "abstract digital art";
     const output = document.getElementById("output-image");
     const placeholder = document.querySelector(".placeholder");
 
@@ -56,21 +55,27 @@ async function generateWithGrok() {
     currentImageUrl = output.src;
 
     const note = document.getElementById("note-text");
-    if (!note.value) note.value = `Generated: ${new Date().toLocaleString()}\nPrompt: ${prompt}`;
-    
+    if (!note.value.trim()) {
+        note.value = `Generated: ${new Date().toLocaleString()}\n\nPrompt:\n${prompt}`;
+    }
+
     console.log("%c[Grok Play] Image generated", "color:#00ffaa");
 }
 
 function saveToSequence() {
-    if (!obj) return;
+    if (!obj) {
+        alert("Theatre.js not ready yet");
+        return;
+    }
+    
     const intensity = parseFloat(document.getElementById("intensity").value);
     const surreal = parseFloat(document.getElementById("surreal").value);
     const cinematic = parseFloat(document.getElementById("cinematic").value);
 
     obj.set({ intensity, surreal, cinematic });
-    studio.setSelection([obj]);
+    theatre.studio.setSelection([obj]);
     
-    alert("Keyframe saved to Theatre.js Timeline!\n\nGo to the Theatre Timeline tab and click the studio icon (top right) to view/edit the timeline.");
+    alert("✅ Keyframe saved!\n\nGo to the Theatre Timeline tab and click the Theatre.js logo (top right) to open the timeline.");
 }
 
 function setupListeners() {
@@ -78,14 +83,16 @@ function setupListeners() {
     document.getElementById("save-sequence").addEventListener("click", saveToSequence);
 
     document.querySelectorAll('.nav-btn').forEach(btn => {
-        btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
+        btn.addEventListener('click', () => {
+            switchTab(btn.getAttribute('data-tab'));
+        });
     });
 
-    const sliders = ['intensity','surreal','cinematic'];
+    const sliders = ['intensity', 'surreal', 'cinematic'];
     sliders.forEach(id => {
-        const el = document.getElementById(id);
-        el.addEventListener('input', () => {
-            document.getElementById(`val-${id}`).textContent = el.value;
+        const slider = document.getElementById(id);
+        slider.addEventListener('input', () => {
+            document.getElementById(`val-${id}`).textContent = slider.value;
         });
     });
 
@@ -94,8 +101,9 @@ function setupListeners() {
     });
 }
 
-window.onload = async () => {
-    console.log("%cfornever collective — grok play v3 (clean + full theatre studio)", "color:#00ffaa");
-    await initTheatre();
+// Initialize
+window.onload = () => {
+    console.log("%cfornever collective — grok play v3 (clean + theatre studio)", "color:#00ffaa");
+    initTheatre();
     setupListeners();
 };
