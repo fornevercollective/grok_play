@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Grok Image Playground + Theatre + Notes</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.9/dat.gui.min.js"></script>
+  <style>
+    :root {
+      --bg: #0a0a0a;
+      --panel: #111111;
+      --accent: #00ff9d;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: #ddd;
+      height: 100vh;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 280px 1fr 320px;
+    }
+    .sidebar, .right-panel {
+      background: var(--panel);
+      border-right: 1px solid #222;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .right-panel { border-right: none; border-left: 1px solid #222; }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(90deg, #00ff9d, #00b36b);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 30px;
+    }
+
+    .tab-btn {
+      width: 100%;
+      padding: 14px;
+      background: #1a1a1a;
+      border: none;
+      color: #aaa;
+      text-align: left;
+      margin: 6px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active, .tab-btn:hover {
+      background: var(--accent);
+      color: black;
+      font-weight: 600;
+    }
+
+    .main {
+      padding: 20px;
+      background: #0f0f0f;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #preview {
+      flex: 1;
+      background: #000;
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid #222;
+    }
+    #output-image {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: none;
+    }
+    .placeholder {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #444;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .generate-btn {
+      margin-top: 15px;
+      padding: 16px 24px;
+      background: linear-gradient(90deg, #00ff9d, #00cc7a);
+      color: black;
+      border: none;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 16px;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .note-editor {
+      width: 100%;
+      height: 300px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 8px;
+      padding: 12px;
+      color: #ddd;
+      font-family: inherit;
+      resize: none;
+    }
+
+    .status {
+      margin-top: 20px;
+      padding: 10px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #00ff9d;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar -->
+  <div class="sidebar">
+    <div class="logo">GROK PLAY</div>
+    
+    <button class="tab-btn active" onclick="switchTab(0)">🎨 Image Playground</button>
+    <button class="tab-btn" onclick="switchTab(1)">📝 Notes</button>
+    <button class="tab-btn" onclick="switchTab(2)">🎭 Theatre Controls</button>
+
+    <div class="status">
+      <span class="dot"></span>
+      Connected to Grok Image Playground
+    </div>
+  </div>
+
+  <!-- Main Area -->
+  <div class="main">
+    <div id="playground" class="tab">
+      <div id="preview">
+        <img id="output-image" alt="Generated Image">
+        <div class="placeholder">Click "Generate with Grok" to create an image</div>
+      </div>
+      <button class="generate-btn" onclick="generateImage()">✨ Generate with Grok</button>
+    </div>
+
+    <div id="notes" class="tab" style="display:none;">
+      <h2 style="margin-bottom:15px;">Image Notes</h2>
+      <textarea id="note-text" class="note-editor" placeholder="Write your thoughts, prompt ideas, or story behind this image..."></textarea>
+      <small style="color:#666; margin-top:8px; display:block;">Notes are saved automatically with each generation.</small>
+    </div>
+
+    <div id="theatre" class="tab" style="display:none;">
+      <h2>Theatre.js Controls</h2>
+      <p style="color:#666; margin:15px 0;">Use the controls on the right to animate image parameters over time.</p>
+      <div id="theatre-info" style="background:#1a1a1a; padding:20px; border-radius:12px; color:#00ff9d;">
+        <strong>Pro Tip:</strong> Adjust sliders in the right panel while generating multiple images to create "animated prompt journeys".
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Panel - Controls -->
+  <div class="right-panel">
+    <h3 style="margin-bottom:20px; color:var(--accent);">Prompt & Style Controls</h3>
+    
+    <div style="margin-bottom:20px;">
+      <label>Prompt</label>
+      <textarea id="prompt" rows="4" style="width:100%; background:#1a1a1a; border:1px solid #333; color:white; padding:10px; border-radius:8px;">A cinematic cyberpunk street at night, neon lights reflecting on wet pavement, flying cars, ultra detailed, moody atmosphere</textarea>
+    </div>
+
+    <div style="margin-bottom:15px;">
+      <label>Style Intensity</label>
+      <input type="range" id="intensity" min="0" max="100" value="75" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:15px;">
+      <label>Surreal Factor</label>
+      <input type="range" id="surreal" min="0" max="100" value="30" style="width:100%;">
+    </div>
+
+    <div style="margin-bottom:15px;">
+      <label>Cinematic Lighting</label>
+      <input type="range" id="cinematic" min="0" max="100" value="85" style="width:100%;">
+    </div>
+
+    <hr style="border-color:#222; margin:20px 0;">
+    
+    <h4 style="margin:15px 0 10px;">Quick Prompts</h4>
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+      <button onclick="quickPrompt(this)" style="padding:10px; background:#1a1a1a; border:none; border-radius:6px; color:#ddd;">Surreal Dream</button>
+      <button onclick="quickPrompt(this)" style="padding:10px; background:#1a1a1a; border:none; border-radius:6px; color:#ddd;">Epic Landscape</button>
+      <button onclick="quickPrompt(this)" style="padding:10px; background:#1a1a1a; border:none; border-radius:6px; color:#ddd;">Character Portrait</button>
+      <button onclick="quickPrompt(this)" style="padding:10px; background:#1a1a1a; border:none; border-radius:6px; color:#ddd;">Cyberpunk City</button>
+    </div>
+  </div>
+
+  <script>
+    let currentImageUrl = "";
+    let notes = {};
+
+    function switchTab(n) {
+      document.querySelectorAll('.tab').forEach(tab => tab.style.display = 'none');
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      
+      if (n === 0) document.getElementById('playground').style.display = 'block';
+      if (n === 1) document.getElementById('notes').style.display = 'block';
+      if (n === 2) document.getElementById('theatre').style.display = 'block';
+      
+      document.querySelectorAll('.tab-btn')[n].classList.add('active');
+    }
+
+    async function generateImage() {
+      const promptEl = document.getElementById('prompt');
+      const prompt = promptEl.value.trim() || "A beautiful surreal landscape";
+      
+      const output = document.getElementById('output-image');
+      const placeholder = document.querySelector('.placeholder');
+      
+      placeholder.style.display = 'none';
+      output.style.display = 'block';
+      output.src = "https://picsum.photos/id/" + Math.floor(Math.random()*1000) + "/1024/1024"; // Placeholder
+
+      // Simulate Grok generation delay
+      await new Promise(r => setTimeout(r, 1400));
+
+      // In a real version, you would call xAI's API here
+      console.log("%c[ Grok Image Playground ] Generated with prompt: " + prompt, "color:#00ff9d; font-weight:bold");
+
+      currentImageUrl = output.src;
+      
+      // Auto-save note
+      if (!notes[currentImageUrl]) {
+        notes[currentImageUrl] = "Generated on " + new Date().toLocaleString() + "\n\nPrompt: " + prompt;
+        document.getElementById('note-text').value = notes[currentImageUrl];
+      }
+    }
+
+    function quickPrompt(btn) {
+      const prompts = {
+        "Surreal Dream": "Dreamlike surreal landscape with floating islands, impossible architecture, glowing particles, ethereal lighting, in the style of Zdzisław Beksiński and Salvador Dalí",
+        "Epic Landscape": "Epic cinematic mountain landscape at golden hour, dramatic clouds, volumetric lighting, ultra realistic, National Geographic style",
+        "Character Portrait": "Highly detailed portrait of a mysterious female cyber-samurai, intricate armor, neon accents, dramatic rim lighting, photorealistic",
+        "Cyberpunk City": "Breathtaking cyberpunk megacity at night, flying vehicles, dense neon signs, rain reflections, blade runner aesthetic, ultra detailed"
+      };
+      
+      document.getElementById('prompt').value = prompts[btn.textContent];
+      generateImage();
+    }
+
+    // Keyboard shortcut
+    document.addEventListener('keydown', (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+        generateImage();
+      }
+    });
+
+    // Initialize
+    window.onload = () => {
+      console.log("%cGrok Image Playground + Theatre + Notes Ready", "color:#00ff9d; font-size:16px; font-weight:bold");
+      document.getElementById('prompt').focus();
+    };
+  </script>
+</body>
+</html>
