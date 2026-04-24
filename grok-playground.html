@@ -8,6 +8,7 @@
 </head>
 <body>
   <div class="app">
+    <!-- Sidebar -->
     <div class="sidebar">
       <div class="logo">GROK PLAY</div>
       <div class="nav">
@@ -21,29 +22,31 @@
       </div>
     </div>
 
+    <!-- Tabs -->
     <div class="main" id="playground-tab">
       <div id="preview">
         <img id="output-image" alt="Grok Output">
-        <div class="placeholder">Your image will appear here.<br>Press Generate to begin.</div>
+        <div class="placeholder">Your Grok-generated image will appear here</div>
       </div>
       <button id="generate-btn">GENERATE WITH GROK</button>
     </div>
 
     <div class="main hidden" id="notes-tab">
       <h2>Image Notes</h2>
-      <textarea id="note-text" class="note-editor" placeholder="Write your thoughts, references, or concept..."></textarea>
+      <textarea id="note-text" class="note-editor" placeholder="Write your thoughts, story, or references for this image..."></textarea>
     </div>
 
     <div class="main hidden" id="theatre-tab">
-      <h2>Theatre.js Timeline</h2>
+      <h2>Theatre.js Timeline Studio</h2>
       <div id="theatre-container">
-        <p id="studio-status">Loading Theatre Studio with full timeline...</p>
+        <p id="studio-status">Loading full Theatre Studio with timeline...</p>
       </div>
     </div>
 
+    <!-- Right Panel -->
     <div class="right-panel">
       <h3>Prompt Studio</h3>
-      <textarea id="prompt" rows="5"></textarea>
+      <textarea id="prompt" rows="5">ethereal cybernetic angel floating in a storm of glowing particles, dramatic rim lighting, cinematic color grading, intricate details, 8k</textarea>
 
       <div class="slider-group">
         <label>Style Intensity <span id="val-intensity" class="value">65</span></label>
@@ -54,11 +57,11 @@
         <input type="range" id="surreal" min="0" max="100" value="45">
       </div>
       <div class="slider-group">
-        <label>Cinematic Drama <span id="val-cinematic" class="value">80</span></label>
-        <input type="range" id="cinematic" min="0" max="100" value="80">
+        <label>Cinematic Drama <span id="val-cinematic" class="value">82</span></label>
+        <input type="range" id="cinematic" min="0" max="100" value="82">
       </div>
 
-      <button id="save-sequence">Save to Theatre Timeline</button>
+      <button id="save-sequence">Save Parameters to Theatre Timeline</button>
     </div>
   </div>
 
