@@ -22,24 +22,24 @@
       </div>
     </div>
 
-    <!-- Main Content -->
+    <!-- Tabs -->
     <div class="main" id="playground-tab">
       <div id="preview">
         <img id="output-image" alt="Grok Output">
-        <div class="placeholder">Your image will appear here.<br>Click "Generate with Grok" to begin.</div>
+        <div class="placeholder">Your image will appear here.<br>Click Generate to begin.</div>
       </div>
       <button id="generate-btn">GENERATE WITH GROK</button>
     </div>
 
     <div class="main hidden" id="notes-tab">
       <h2>Image Notes</h2>
-      <textarea id="note-text" class="note-editor" placeholder="Write your thoughts, references, or story behind this image..."></textarea>
+      <textarea id="note-text" class="note-editor" placeholder="Write your thoughts, references, or story..."></textarea>
     </div>
 
     <div class="main hidden" id="theatre-tab">
       <h2>Theatre.js Timeline</h2>
       <div id="theatre-container">
-        <p id="studio-status">Loading Theatre Studio...</p>
+        <p id="studio-status" style="color:#d32f2f;">Loading Theatre Studio...</p>
       </div>
     </div>
 
@@ -65,8 +65,9 @@
     </div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/@theatre/studio@0.4.0/dist/index.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@theatre/core@0.4.0/dist/index.js"></script>
+  <!-- Load Theatre.js from Skypack (more reliable on GitHub Pages) -->
+  <script src="https://cdn.skypack.dev/@theatre/core@0.4.0"></script>
+  <script src="https://cdn.skypack.dev/@theatre/studio@0.4.0"></script>
   <script src="app.js"></script>
 </body>
 </html>
