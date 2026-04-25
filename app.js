@@ -1,16 +1,34 @@
-// app.js - Fornever Collective Grok Play (White Theme + Fixed)
+// app.js - Fixed for GitHub Pages + White Theme
 let project, sheet, obj;
+let theatreCore, theatreStudio;
 
-function initTheatre() {
+async function initTheatre() {
+    const statusEl = document.getElementById("studio-status");
+
     try {
-        theatre.studio.initialize();
-        project = theatre.getProject("GrokPlayProject");
+        // Wait for scripts to load
+        await new Promise(r => setTimeout(r, 800));
+
+        if (typeof window.theatre === "undefined") {
+            throw new Error("Theatre not found on window");
+        }
+
+        theatreStudio = window.theatre.studio || window.studio;
+        theatreCore = window.theatre.core || window.core || window.theatre;
+
+        if (!theatreStudio || !theatreCore) {
+            throw new Error("Could not access Theatre modules");
+        }
+
+        theatreStudio.initialize();
+
+        project = theatreCore.getProject("GrokPlayProject");
         sheet = project.sheet("Image Sequence");
 
         obj = sheet.object("Visual Controls", {
-            intensity: theatre.types.number(65, { range: [0, 100] }),
-            surreal: theatre.types.number(45, { range: [0, 100] }),
-            cinematic: theatre.types.number(82, { range: [0, 100] })
+            intensity: theatreCore.types.number(65, { range: [0, 100] }),
+            surreal: theatreCore.types.number(45, { range: [0, 100] }),
+            cinematic: theatreCore.types.number(82, { range: [0, 100] })
         });
 
         obj.onValuesChange((values) => {
@@ -23,13 +41,16 @@ function initTheatre() {
             document.getElementById("val-cinematic").textContent = Math.round(values.cinematic);
         });
 
-        document.getElementById("studio-status").innerHTML = 
-            `✅ Theatre Studio Loaded<br><small>Click the Theatre.js icon (top right) to open timeline &amp; keyframes.</small>`;
+        statusEl.style.color = "#00aa77";
+        statusEl.innerHTML = `✅ Theatre Studio Loaded<br>
+            <small style="color:#555">Click the Theatre.js icon in the top-right corner to open the timeline and create keyframes.</small>`;
 
-    } catch (e) {
-        console.error(e);
-        document.getElementById("studio-status").innerHTML = 
-            `❌ Theatre.js failed to load. Check console.`;
+        console.log("%cTheatre.js Studio initialized successfully", "color:#00aa77");
+
+    } catch (err) {
+        console.error("Theatre.js Error:", err);
+        statusEl.innerHTML = `❌ Failed to load Theatre.js<br>
+            <small style="color:#d32f2f">Error: ${err.message}</small>`;
     }
 }
 
@@ -53,15 +74,13 @@ function generateWithGrok() {
 
     const noteEl = document.getElementById("note-text");
     if (!noteEl.value.trim()) {
-        noteEl.value = `Generated: ${new Date().toLocaleString()}\nPrompt: ${prompt || "No prompt entered"}`;
+        noteEl.value = `Generated: ${new Date().toLocaleString()}\nPrompt: ${prompt || "No prompt"}`;
     }
-
-    console.log("%c[Grok Play] Image generated", "color:#00aa77");
 }
 
 function saveToSequence() {
     if (!obj) {
-        alert("Theatre.js is still loading. Please wait a moment.");
+        alert("Theatre.js is still loading or failed to initialize.");
         return;
     }
 
@@ -70,9 +89,9 @@ function saveToSequence() {
     const cinematic = parseFloat(document.getElementById("cinematic").value);
 
     obj.set({ intensity, surreal, cinematic });
-    theatre.studio.setSelection([obj]);
+    theatreStudio.setSelection([obj]);
 
-    alert("✅ Parameters saved as keyframe in Theatre.js Timeline!\n\nSwitch to the Theatre Timeline tab and click the studio icon (top right) to view the timeline.");
+    alert("✅ Saved to Theatre Timeline!\n\nSwitch to the Theatre tab and click the studio icon (top right) to see the timeline.");
 }
 
 function setupListeners() {
@@ -95,9 +114,9 @@ function setupListeners() {
     });
 }
 
-// Initialize
+// Start the app
 window.onload = () => {
-    console.log("%cfornever collective — grok play v3 (white theme + fixed)", "color:#00aa77");
+    console.log("%cfornever collective — grok play v3 (white theme)", "color:#00aa77");
     initTheatre();
     setupListeners();
 };
